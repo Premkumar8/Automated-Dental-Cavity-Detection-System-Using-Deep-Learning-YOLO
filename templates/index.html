@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dental X-Ray Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="page-shell">
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <main class="layout">
+      <section class="hero">
+        <p class="eyebrow">Dental Cavity Detector</p>
+        <h1>Upload a dental image and detect cavity regions.</h1>
+        <p class="intro">
+          This interface uses your trained YOLO oriented-box model to locate cavity and normal tooth regions, then summarizes the highest-confidence findings.
+        </p>
+
+        <div class="status-grid">
+          <div class="status-card">
+            <span class="status-label">Model</span>
+            <strong class="{{ 'ok' if status.model_exists else 'missing' }}">
+              {{ 'Ready' if status.model_exists else 'Missing' }}
+            </strong>
+            <p>{{ status.model_path }}</p>
+          </div>
+          <div class="status-card">
+            <span class="status-label">Labels</span>
+            <strong class="{{ 'ok' if status.labels_exist else 'missing' }}">
+              {{ 'Ready' if status.labels_exist else 'Missing' }}
+            </strong>
+            <p>{{ status.labels_path }}</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <form class="upload-form" method="post" enctype="multipart/form-data">
+          <label class="upload-box" for="xray_image">
+            <input id="xray_image" type="file" name="xray_image" accept=".png,.jpg,.jpeg,.bmp,.tif,.tiff" required>
+            <span class="upload-title">Select X-ray Image</span>
+            <span class="upload-subtitle">Panoramic image formats: PNG, JPG, JPEG, BMP, TIF, TIFF</span>
+          </label>
+          <button type="submit">Analyze Image</button>
+        </form>
+
+        {% if error %}
+        <div class="message error">{{ error }}</div>
+        {% endif %}
+
+        {% if report %}
+        <div class="results">
+          <div class="result-header">
+            <div>
+              <p class="result-kicker">Primary finding</p>
+              <h2>{{ report.predicted_label }}</h2>
+            </div>
+            <div class="confidence-badge">
+              {{ "%.2f"|format(report.predicted_confidence * 100) }}%
+            </div>
+          </div>
+
+          {% if image_name %}
+          <div class="preview-wrap">
+            <img src="{{ url_for('uploaded_file', filename=image_name) }}" alt="Uploaded X-ray preview" onerror="this.style.display='none'">
+          </div>
+          {% endif %}
+
+          <div class="report-card">
+            <h3>AI Report</h3>
+            <p>{{ report.report }}</p>
+          </div>
+
+          <div class="prediction-grid">
+            {% for item in report.top_predictions %}
+            <div class="prediction-card">
+              <span>{{ item.label }}</span>
+              <strong>{{ "%.2f"|format(item.confidence * 100) }}%</strong>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+
+
+
