@@ -1,9 +1,15 @@
+---
+title: Dental
+emoji: 📈
+colorFrom: gray
+colorTo: gray
+sdk: docker
+pinned: false
+---
+
 # Dental X-Ray Disease Classifier
 
-This project trains a TensorFlow model on the Kaggle dataset:
-
-`lokisilvres/dental-disease-panoramic-detection-dataset`
-
+This project trains a YOLOv8 model on the panoramic dental X-ray dataset.
 The output for a single panoramic X-ray is:
 
 - predicted dental disease label
@@ -97,3 +103,7 @@ The web UI expects these files from training:
 - This is an AI assistance model, not a clinical diagnosis system.
 - Real performance depends on full dataset download, class balance, and image quality.
 - For production use, a dentist or oral radiologist must validate predictions.
+
+---
+Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+

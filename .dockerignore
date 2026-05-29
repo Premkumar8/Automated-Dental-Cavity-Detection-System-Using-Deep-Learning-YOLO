@@ -1,0 +1,9 @@
+.git
+.gitignore
+.venv310
+venv
+__pycache__
+*.pyc
+uploads/*
+artifacts/*
+.ipynb_checkpoints

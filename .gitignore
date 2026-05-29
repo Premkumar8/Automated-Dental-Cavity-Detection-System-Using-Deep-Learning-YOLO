@@ -3,3 +3,11 @@ venv310/
 __pycache__/
 *.pyc
 *.pyo
+
+# Ignore YOLO training plots and logs (not needed for deployment)
+runs/**/*.png
+runs/**/*.jpg
+runs/**/*.jpeg
+uploads/*
+artifacts/*
+
