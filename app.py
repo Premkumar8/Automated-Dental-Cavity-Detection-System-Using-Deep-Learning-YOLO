@@ -4,7 +4,7 @@ import os
 from collections import Counter
 from pathlib import Path
 
-from flask import Flask, render_template, request, send_from_directory
+from flask import Flask, render_template, request, send_from_directory, session, redirect, url_for
 from ultralytics import YOLO
 from werkzeug.utils import secure_filename
 
@@ -19,11 +19,22 @@ ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff"}
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024
 app.config["UPLOAD_FOLDER"] = str(UPLOAD_DIR)
+app.secret_key = "dental_super_secret_key"
 
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
 
 _MODEL = None
+
+from functools import wraps
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("logged_in"):
+            return redirect(url_for("login", next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 def allowed_file(filename: str) -> bool:
@@ -118,7 +129,27 @@ def build_detection_report(image_path: Path) -> dict:
     }
 
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    error = None
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        if username == "eag" and password == "eagle@2026":
+            session["logged_in"] = True
+            return redirect(url_for("index"))
+        else:
+            error = "Invalid credentials. Please try again."
+    return render_template("login.html", error=error)
+
+@app.route("/logout")
+def logout():
+    session.pop("logged_in", None)
+    return redirect(url_for("login"))
+
+
 @app.route("/", methods=["GET", "POST"])
+@login_required
 def index():
     error = None
     report = None

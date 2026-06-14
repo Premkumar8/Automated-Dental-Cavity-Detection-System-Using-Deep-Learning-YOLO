@@ -15,18 +15,34 @@
     <div class="ambient ambient-two"></div>
 
     <main class="layout">
+      <header class="app-header">
+        <div class="header-left">
+          <p class="eyebrow">Dental Cavity Detector</p>
+        </div>
+        <div class="header-right">
+          <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+        </div>
+      </header>
+
       <section class="hero">
-        <p class="eyebrow">Dental Cavity Detector</p>
         <h1>Upload a dental image and detect cavity regions.</h1>
       </section>
 
       <section class="panel">
         <form class="upload-form" method="post" enctype="multipart/form-data">
-          <label class="upload-box" for="xray_image">
-            <input id="xray_image" type="file" name="xray_image" accept=".png,.jpg,.jpeg,.bmp,.tif,.tiff" required>
-            <span class="upload-title">Select X-ray Image</span>
-            <span class="upload-subtitle">Panoramic image formats: PNG, JPG, JPEG, BMP, TIF, TIFF</span>
-          </label>
+          <div class="upload-options">
+            <label class="upload-box" for="xray_image">
+              <input id="xray_image" type="file" name="xray_image" accept=".png,.jpg,.jpeg,.bmp,.tif,.tiff" required>
+              <span class="upload-title">Select X-ray Image</span>
+              <span class="upload-subtitle">From device storage</span>
+            </label>
+            
+            <label class="upload-box camera-box" for="camera_image">
+              <input id="camera_image" type="file" name="xray_image" accept="image/*" capture="environment">
+              <span class="upload-title">Take Photo</span>
+              <span class="upload-subtitle">Use your camera</span>
+            </label>
+          </div>
           <button type="submit">Analyze Image</button>
         </form>
 
