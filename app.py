@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 BASE_DIR = Path(__file__).resolve().parent
 ARTIFACTS_DIR = BASE_DIR / "artifacts"
 UPLOAD_DIR = BASE_DIR / "uploads"
-MODEL_PATH = Path(os.getenv("YOLO_MODEL_PATH", BASE_DIR / "runs" / "obb" / "cavity_obb" / "weights" / "best.pt"))
+MODEL_PATH = Path(os.getenv("YOLO_MODEL_PATH", BASE_DIR / "runs" / "obb" / "cavity_obb_best-6" / "weights" / "best.pt"))
 FALLBACK_MODEL_PATH = BASE_DIR / "runs" / "obb" / "cavity_obb_test" / "weights" / "best.pt"
 ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff"}
 
@@ -51,7 +51,7 @@ def get_model() -> YOLO:
 
 def build_detection_report(image_path: Path) -> dict:
     model = get_model()
-    results = model.predict(source=str(image_path), imgsz=640, conf=0.25, verbose=False)
+    results = model.predict(source=str(image_path), imgsz=640, conf=0.60, iou=0.45, verbose=False)
     result = results[0]
     names = result.names
     obb = result.obb
