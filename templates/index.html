@@ -75,12 +75,24 @@
       </div>
 
       <div class="results-grid">
-        <div class="preview-wrap">
-          {% if report.annotated_image_name %}
-            <img src="{{ url_for('uploaded_file', filename=report.annotated_image_name) }}" alt="Annotated Output">
-          {% else %}
-            <img src="{{ url_for('uploaded_file', filename=image_name) }}" alt="Uploaded Image">
-          {% endif %}
+        <div class="image-comparison">
+          <div class="preview-col">
+            <h3 class="preview-title">Original X-Ray</h3>
+            <div class="preview-wrap">
+              <img src="{{ url_for('uploaded_file', filename=image_name) }}" alt="Original Image">
+            </div>
+          </div>
+          
+          <div class="preview-col">
+            <h3 class="preview-title">AI Analysis</h3>
+            <div class="preview-wrap">
+              {% if report.annotated_image_name %}
+                <img src="{{ url_for('uploaded_file', filename=report.annotated_image_name) }}" alt="Annotated Output">
+              {% else %}
+                <img src="{{ url_for('uploaded_file', filename=image_name) }}" alt="Analysis Output">
+              {% endif %}
+            </div>
+          </div>
         </div>
 
         <div class="report-side">
@@ -117,15 +129,33 @@
     const uploadForm = document.querySelector('.upload-form');
     const analyzeBtn = document.querySelector('.btn-analyze');
 
+    // UI elements to update on file selection
+    const uploadSubtitle = uploadInput.parentElement.querySelector('.upload-subtitle');
+    const cameraSubtitle = cameraInput.parentElement.querySelector('.upload-subtitle');
+    const uploadTitle = uploadInput.parentElement.querySelector('.upload-title');
+    const cameraTitle = cameraInput.parentElement.querySelector('.upload-title');
+
     cameraInput.addEventListener('change', () => {
       if(cameraInput.files.length > 0) {
         uploadInput.removeAttribute('required');
+        cameraTitle.innerHTML = `<span style="color: var(--success)">Photo Ready</span>`;
+        cameraSubtitle.innerText = "Camera captured successfully";
+        
+        // Reset the other box
+        uploadTitle.innerText = "Upload Image";
+        uploadSubtitle.innerText = "Browse from device";
       }
     });
     
     uploadInput.addEventListener('change', () => {
       if(uploadInput.files.length > 0) {
         cameraInput.value = '';
+        uploadTitle.innerHTML = `<span style="color: var(--success)">File Selected</span>`;
+        uploadSubtitle.innerText = uploadInput.files[0].name;
+        
+        // Reset the other box
+        cameraTitle.innerText = "Take Photo";
+        cameraSubtitle.innerText = "Capture X-ray directly";
       }
     });
 
