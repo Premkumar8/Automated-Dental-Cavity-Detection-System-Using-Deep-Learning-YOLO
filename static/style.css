@@ -351,10 +351,7 @@ p { margin: 0; }
 .image-comparison {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-}
-@media(min-width: 640px) {
-  .image-comparison { flex-direction: row; }
+  gap: 1.5rem;
 }
 .preview-col {
   flex: 1;
@@ -384,7 +381,7 @@ p { margin: 0; }
 }
 .preview-wrap img {
   width: 100%;
-  max-height: 600px;
+  max-height: 800px;
   object-fit: contain;
   display: block;
 }
