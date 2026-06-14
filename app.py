@@ -56,6 +56,12 @@ def build_detection_report(image_path: Path) -> dict:
     names = result.names
     obb = result.obb
 
+    import cv2
+    annotated_img = result.plot(labels=False, conf=False, line_width=2)
+    annotated_filename = "annotated_" + image_path.name
+    annotated_path = image_path.parent / annotated_filename
+    cv2.imwrite(str(annotated_path), annotated_img)
+
     detections = []
     if obb is not None and obb.cls is not None and len(obb.cls) > 0:
         classes = obb.cls.cpu().numpy().astype(int).tolist()
@@ -82,17 +88,24 @@ def build_detection_report(image_path: Path) -> dict:
     cavity_count = counts.get("cavity", 0)
     normal_count = counts.get("normal", 0)
 
+    EXPLANATIONS = {
+        "cavity": "A cavity is a permanently damaged area in the hard surface of your teeth that develops into a tiny opening or hole.",
+        "normal": "The region appears as a normal, healthy tooth structure."
+    }
+
     if cavity_count > 0:
         summary = (
             f"The model detected {cavity_count} cavity candidate region"
             f"{'s' if cavity_count != 1 else ''}. The highest-confidence finding is "
-            f"{top_detection['label']} at {top_detection['confidence'] * 100:.2f}%. "
+            f"{top_detection['label']} at {top_detection['confidence'] * 100:.2f}%. \n\n"
+            f"Clinical Context: {EXPLANATIONS['cavity']}\n\n"
             "Use this as AI assistance only; a dentist should confirm the finding."
         )
     else:
         summary = (
             f"The model detected {normal_count} normal tooth region"
-            f"{'s' if normal_count != 1 else ''} and no cavity candidate above the threshold. "
+            f"{'s' if normal_count != 1 else ''} and no cavity candidate above the threshold. \n\n"
+            f"Clinical Context: {EXPLANATIONS['normal']}\n\n"
             "Use this as AI assistance only; a dentist should confirm the image."
         )
 
@@ -101,6 +114,7 @@ def build_detection_report(image_path: Path) -> dict:
         "predicted_confidence": top_detection["confidence"],
         "report": summary,
         "top_predictions": detections[:8],
+        "annotated_image_name": annotated_filename,
     }
 
 

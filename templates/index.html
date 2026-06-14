@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -18,26 +18,6 @@
       <section class="hero">
         <p class="eyebrow">Dental Cavity Detector</p>
         <h1>Upload a dental image and detect cavity regions.</h1>
-        <p class="intro">
-          This interface uses your trained YOLO oriented-box model to locate cavity and normal tooth regions, then summarizes the highest-confidence findings.
-        </p>
-
-        <div class="status-grid">
-          <div class="status-card">
-            <span class="status-label">Model</span>
-            <strong class="{{ 'ok' if status.model_exists else 'missing' }}">
-              {{ 'Ready' if status.model_exists else 'Missing' }}
-            </strong>
-            <p>{{ status.model_path }}</p>
-          </div>
-          <div class="status-card">
-            <span class="status-label">Labels</span>
-            <strong class="{{ 'ok' if status.labels_exist else 'missing' }}">
-              {{ 'Ready' if status.labels_exist else 'Missing' }}
-            </strong>
-            <p>{{ status.labels_path }}</p>
-          </div>
-        </div>
       </section>
 
       <section class="panel">
@@ -54,7 +34,10 @@
         <div class="message error">{{ error }}</div>
         {% endif %}
 
-        {% if report %}
+      </section>
+
+      {% if report %}
+      <section class="panel" style="grid-column: 1 / -1; margin-top: 0.5rem;">
         <div class="results">
           <div class="result-header">
             <div>
@@ -67,17 +50,30 @@
           </div>
 
           {% if image_name %}
-          <div class="preview-wrap">
-            <img src="{{ url_for('uploaded_file', filename=image_name) }}" alt="Uploaded X-ray preview" onerror="this.style.display='none'">
+          <div class="diagnostic-grid">
+            <div class="diagnostic-column">
+              <span class="column-badge">Original Radiograph</span>
+              <div class="preview-wrap">
+                <img src="{{ url_for('uploaded_file', filename=image_name) }}" alt="Original X-ray radiograph">
+              </div>
+            </div>
+            {% if report.annotated_image_name %}
+            <div class="diagnostic-column">
+              <span class="column-badge overlay-badge">AI Diagnostic Overlay</span>
+              <div class="preview-wrap annotated-wrap">
+                <img src="{{ url_for('uploaded_file', filename=report.annotated_image_name) }}" alt="AI Cavity Detection Annotations">
+              </div>
+            </div>
+            {% endif %}
           </div>
           {% endif %}
 
-          <div class="report-card">
+          <div class="report-card" style="margin-top: 2rem;">
             <h3>AI Report</h3>
             <p>{{ report.report }}</p>
           </div>
 
-          <div class="prediction-grid">
+          <div class="prediction-grid" style="margin-top: 1rem;">
             {% for item in report.top_predictions %}
             <div class="prediction-card">
               <span>{{ item.label }}</span>
@@ -86,8 +82,8 @@
             {% endfor %}
           </div>
         </div>
-        {% endif %}
       </section>
+      {% endif %}
     </main>
   </div>
 </body>
