@@ -20,6 +20,10 @@ app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024
 app.config["UPLOAD_FOLDER"] = str(UPLOAD_DIR)
 app.secret_key = "dental_super_secret_key"
+app.config.update(
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_SAMESITE='None'
+)
 
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -133,8 +137,8 @@ def build_detection_report(image_path: Path) -> dict:
 def login():
     error = None
     if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "").strip()
         if username == "eag" and password == "eagle@2026":
             session["logged_in"] = True
             return redirect(url_for("index"))
