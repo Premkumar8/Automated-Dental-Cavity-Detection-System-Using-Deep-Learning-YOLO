@@ -16,7 +16,11 @@ MODEL_PATH = Path(os.getenv("YOLO_MODEL_PATH", BASE_DIR / "runs" / "obb" / "cavi
 FALLBACK_MODEL_PATH = BASE_DIR / "runs" / "obb" / "cavity_obb_test" / "weights" / "best.pt"
 ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff"}
 
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
 app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024
 app.config["UPLOAD_FOLDER"] = str(UPLOAD_DIR)
 app.secret_key = "dental_super_secret_key"
