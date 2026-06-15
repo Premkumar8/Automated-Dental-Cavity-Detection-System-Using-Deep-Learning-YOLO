@@ -36,13 +36,24 @@ _MODEL = None
 
 from functools import wraps
 
+def check_auth(username, password):
+    return username == "eag" and password == "eagle@2026"
+
+def authenticate():
+    from flask import Response
+    return Response(
+        "Could not verify your access level for that URL.\n"
+        "You have to login with proper credentials", 401,
+        {"WWW-Authenticate": 'Basic realm="Dental AI Portal"'})
+
 def login_required(f):
     @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get("logged_in"):
-            return redirect(url_for("login", next=request.url))
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
         return f(*args, **kwargs)
-    return decorated_function
+    return decorated
 
 
 def allowed_file(filename: str) -> bool:
@@ -135,25 +146,6 @@ def build_detection_report(image_path: Path) -> dict:
         "top_predictions": detections[:8],
         "annotated_image_name": annotated_filename,
     }
-
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    error = None
-    if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        password = request.form.get("password", "").strip()
-        if username == "eag" and password == "eagle@2026":
-            session["logged_in"] = True
-            return redirect(url_for("index"))
-        else:
-            error = "Invalid credentials. Please try again."
-    return render_template("login.html", error=error)
-
-@app.route("/logout")
-def logout():
-    session.pop("logged_in", None)
-    return redirect(url_for("login"))
 
 
 @app.route("/", methods=["GET", "POST"])
