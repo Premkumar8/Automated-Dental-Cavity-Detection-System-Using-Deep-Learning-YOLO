@@ -22,6 +22,7 @@
           <div class="avatar">E</div>
           <span class="username">Dr. eag</span>
         </div>
+        <a href="/" class="btn-logout">Logout</a>
       </div>
     </div>
   </header>
@@ -34,6 +35,8 @@
 
     <div class="card upload-card">
       <form class="upload-form" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="username" value="{{ username }}">
+        <input type="hidden" name="password" value="{{ password }}">
         <div class="upload-options">
           <label class="upload-box" for="xray_image">
             <input id="xray_image" type="file" name="xray_image" accept=".png,.jpg,.jpeg,.bmp,.tif,.tiff" class="hidden-input" required>

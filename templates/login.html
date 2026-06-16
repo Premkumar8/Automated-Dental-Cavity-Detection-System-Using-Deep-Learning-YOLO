@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Dental X-Ray Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-body">
+  <div class="login-split">
+    <div class="login-left">
+      <img src="{{ url_for('static', filename='login_bg.png') }}" alt="AI Dentistry">
+      <div class="login-overlay">
+        <h1>Next-Gen Dental AI</h1>
+        <p>Harness the power of AI to detect cavity regions with unprecedented accuracy.</p>
+      </div>
+    </div>
+    
+    <div class="login-right">
+      <div class="login-form-container">
+        <div class="login-brand">
+          <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4c-3.8 0-6.7 3.3-6.7 7.2 0 4.1 2.5 8.1 4.5 10.3.5.5 1.1.7 1.7.7h1c.6 0 1.2-.2 1.7-.7 2-2.2 4.5-6.2 4.5-10.3C18.7 7.3 15.8 4 12 4z"/><path d="M8 12c2.5 2 5.5 2 8 0"/></svg>
+          Dental AI Portal
+        </div>
+        
+        <h2>Sign in to your account</h2>
+        <p class="login-subtitle">Enter your clinical credentials to proceed</p>
+
+        <form class="login-form" method="post" action="{{ url_for('index') }}">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required autocomplete="username" autofocus placeholder="e.g. clinicial_id">
+          </div>
+          
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="••••••••">
+          </div>
+
+          {% if error %}
+          <div class="message error">{{ error }}</div>
+          {% endif %}
+
+          <button type="submit" class="btn-primary btn-block">Access Dashboard</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

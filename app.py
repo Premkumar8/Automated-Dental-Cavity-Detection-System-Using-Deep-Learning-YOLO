@@ -36,24 +36,10 @@ _MODEL = None
 
 from functools import wraps
 
-def check_auth(username, password):
-    return username == "eag" and password == "eagle@2026"
-
-def authenticate():
-    from flask import Response
-    return Response(
-        "Could not verify your access level for that URL.\n"
-        "You have to login with proper credentials", 401,
-        {"WWW-Authenticate": 'Basic realm="Dental AI Portal"'})
-
-def login_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-        if not auth or not check_auth(auth.username, auth.password):
-            return authenticate()
-        return f(*args, **kwargs)
-    return decorated
+def check_auth(request):
+    username = request.form.get("username", "").strip()
+    password = request.form.get("password", "").strip()
+    return username == "eag" and password == "eagle@2026", username, password
 
 
 def allowed_file(filename: str) -> bool:
@@ -149,17 +135,21 @@ def build_detection_report(image_path: Path) -> dict:
 
 
 @app.route("/", methods=["GET", "POST"])
-@login_required
 def index():
+    if request.method == "GET":
+        return render_template("login.html")
+
+    is_authed, username, password = check_auth(request)
+    if not is_authed:
+        return render_template("login.html", error="Invalid credentials. Please try again.")
+
     error = None
     report = None
     image_name = None
 
-    if request.method == "POST":
-        uploaded_file = request.files.get("xray_image")
-        if uploaded_file is None or uploaded_file.filename == "":
-            error = "Select an X-ray image to continue."
-        elif not allowed_file(uploaded_file.filename):
+    uploaded_file = request.files.get("xray_image")
+    if uploaded_file and uploaded_file.filename != "":
+        if not allowed_file(uploaded_file.filename):
             error = "Unsupported file type. Use PNG, JPG, JPEG, BMP, TIF, or TIFF."
         else:
             filename = secure_filename(uploaded_file.filename)
@@ -186,6 +176,8 @@ def index():
         report=report,
         image_name=image_name,
         status=status,
+        username=username,
+        password=password
     )
 
 
